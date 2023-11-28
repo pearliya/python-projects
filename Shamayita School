@@ -1,0 +1,66 @@
+import sqlite3
+
+# Connect to the database
+conn = sqlite3.connect('employee.db')
+
+# Create a cursor object
+cursor = conn.cursor()
+
+# Create the employee table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS employees (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        age INTEGER,
+        department TEXT,
+        salary REAL
+    )
+''')
+
+# Function to add a new employee
+def add_employee(name, age, department, salary):
+    cursor.execute('''
+        INSERT INTO employees (name, age, department, salary)
+        VALUES (?, ?, ?, ?)
+    ''', (name, age, department, salary))
+    conn.commit()
+    print("Employee added successfully!")
+
+# Function to update employee information
+def update_employee(id, name, age, department, salary):
+    cursor.execute('''
+        UPDATE employees
+        SET name = ?, age = ?, department = ?, salary = ?
+        WHERE id = ?
+    ''', (name, age, department, salary, id))
+    conn.commit()
+    print("Employee information updated successfully!")
+
+# Function to delete an employee
+def delete_employee(id):
+    cursor.execute('''
+        DELETE FROM employees
+        WHERE id = ?
+    ''', (id,))
+    conn.commit()
+    print("Employee deleted successfully!")
+
+# Function to retrieve employee details
+def get_employee_details(id):
+    cursor.execute('''
+        SELECT * FROM employees
+        WHERE id = ?
+    ''', (id,))
+    employee = cursor.fetchone()
+    if employee:
+        print("Employee Details:")
+        print("ID:", employee[0])
+        print("Name:", employee[1])
+        print("Age:", employee[2])
+        print("Department:", employee[3])
+        print("Salary:", employee[4])
+    else:
+        print("Employee not found!")
+
+# Close the database connection
+conn.close()
